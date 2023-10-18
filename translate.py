@@ -74,7 +74,15 @@ def get_all_translations(rna_sequence, genetic_code):
         A list of strings; each string is an sequence of amino acids encoded by
         `rna_sequence`.
     """
-    pass
+    rna_seq = rna_sequence.upper()
+    aa_seq_list = []
+    start_pos = rna_seq.find('AUG')
+    while start_pos != -1:
+        rna_seq = rna_seq[start_pos:]
+        aa_seq_list.append(translate_sequence(rna_seq, genetic_code))
+        rna_seq = rna_seq[1:]
+        start_pos = rna_seq.find('AUG')
+    return aa_seq_list
 
 def get_reverse(sequence):
     """Reverse orientation of `sequence`.
@@ -157,8 +165,17 @@ def get_longest_peptide(rna_sequence, genetic_code):
         A string of the longest sequence of amino acids encoded by
         `rna_sequence`.
     """
-    pass
-
+    aa_seq_list = get_all_translations(rna_sequence, genetic_code)
+    rev_rna_seq = reverse_and_complement(rna_sequence)
+    rev_aa_seq_list = get_all_translations(rev_rna_seq, genetic_code)
+    longest = ""
+    for aa_seq in aa_seq_list:
+        if len(aa_seq) > len(longest):
+            longest = aa_seq
+    for rev_aa_seq in rev_aa_seq_list:
+        if len(rev_aa_seq) > len(longest):
+            longest = rev_aa_seq
+    return longest
 
 if __name__ == '__main__':
     genetic_code = {'GUC': 'V', 'ACC': 'T', 'GUA': 'V', 'GUG': 'V', 'ACU': 'T', 'AAC': 'N', 'CCU': 'P', 'UGG': 'W', 'AGC': 'S', 'AUC': 'I', 'CAU': 'H', 'AAU': 'N', 'AGU': 'S', 'GUU': 'V', 'CAC': 'H', 'ACG': 'T', 'CCG': 'P', 'CCA': 'P', 'ACA': 'T', 'CCC': 'P', 'UGU': 'C', 'GGU': 'G', 'UCU': 'S', 'GCG': 'A', 'UGC': 'C', 'CAG': 'Q', 'GAU': 'D', 'UAU': 'Y', 'CGG': 'R', 'UCG': 'S', 'AGG': 'R', 'GGG': 'G', 'UCC': 'S', 'UCA': 'S', 'UAA': '*', 'GGA': 'G', 'UAC': 'Y', 'GAC': 'D', 'UAG': '*', 'AUA': 'I', 'GCA': 'A', 'CUU': 'L', 'GGC': 'G', 'AUG': 'M', 'CUG': 'L', 'GAG': 'E', 'CUC': 'L', 'AGA': 'R', 'CUA': 'L', 'GCC': 'A', 'AAA': 'K', 'AAG': 'K', 'CAA': 'Q', 'UUU': 'F', 'CGU': 'R', 'CGC': 'R', 'CGA': 'R', 'GCU': 'A', 'GAA': 'E', 'AUU': 'I', 'UUG': 'L', 'UUA': 'L', 'UGA': '*', 'UUC': 'F'}
